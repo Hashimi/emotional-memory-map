@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
@@ -37,7 +36,6 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            /* Vibrant Mesh Gradient Background */
             background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
             background-size: 400% 400%;
             animation: gradientBG 15s ease infinite;
@@ -50,7 +48,6 @@
             100% { background-position: 0% 50%; }
         }
 
-        /* Floating Shapes for "Cool" Factor */
         .shape {
             position: absolute;
             filter: blur(50px);
@@ -81,7 +78,6 @@
             100% { transform: translate(50px, 50px) rotate(20deg); }
         }
 
-        /* Landing Header */
         .landing-header {
             position: absolute;
             top: 0; left: 0; width: 100%;
@@ -110,7 +106,7 @@
         }
 
         h1.hero-title {
-            font-size: clamp(3rem, 6vw, 6rem); /* Very Big */
+            font-size: clamp(3rem, 6vw, 6rem);
             font-weight: 900;
             color: white;
             line-height: 1.1;
@@ -135,7 +131,7 @@
             display: inline-block;
             padding: 1.2rem 3.5rem;
             background: white;
-            color: #e73c7e; /* Matches gradient pink */
+            color: #e73c7e;
             font-size: 1.2rem;
             font-weight: 900;
             text-decoration: none;
@@ -154,10 +150,8 @@
         .cta-button:hover {
             transform: translateY(-5px) scale(1.05);
             box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-            background: #fff;
         }
 
-        /* Language Button on Landing */
         .lang-btn-landing {
             background: rgba(255,255,255,0.2);
             backdrop-filter: blur(10px);
@@ -177,14 +171,31 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* --- MAP APP STYLES (Hidden Initially) --- */
+        /* Loading Spinner */
+        .loading-spinner {
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px; height: 50px;
+            border: 5px solid rgba(255,255,255,0.3);
+            border-top: 5px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            z-index: 3000;
+            display: none;
+        }
+        @keyframes spin {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        /* --- MAP APP STYLES --- */
         #app-container {
-            display: none; /* Hidden by default */
+            display: none;
             height: 100vh;
             flex-direction: column;
         }
 
-        /* RTL Support */
         html[dir="rtl"] { --text-align: right; }
         html[dir="ltr"] { --text-align: left; }
         html[lang="fa"] body { font-family: 'Vazirmatn', sans-serif; }
@@ -214,10 +225,10 @@
         .btn-submit { background: var(--primary); color: white; }
         .btn-lang { background: #eee; color: #333; margin-left: 10px; }
         html[dir="rtl"] .btn-lang { margin-left: 0; margin-right: 10px; }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
 
         #map { flex-grow: 1; width: 100%; z-index: 1; }
 
-        /* Modal & Legend Styles */
         #modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.5); display: none;
@@ -250,7 +261,6 @@
         .dot { width: 12px; height: 12px; border-radius: 50%; margin-right: 8px; flex-shrink: 0; }
         html[dir="rtl"] .dot { margin-right: 0; margin-left: 8px; }
 
-        /* Popup Styling */
         .leaflet-popup-content-wrapper { border-radius: 8px; padding: 0; overflow: hidden; }
         .leaflet-popup-content { margin: 0; width: 250px !important; text-align: var(--text-align); }
         .popup-header { padding: 10px 15px; color: white; font-weight: bold; text-transform: uppercase; font-size: 0.8rem; }
@@ -260,18 +270,33 @@
         .popup-date { margin-top: 10px; font-size: 0.75rem; color: #999; text-align: inherit; }
         html[dir="rtl"] .popup-date { text-align: left; }
 
+        /* Memory Count */
+        .memory-count {
+            position: absolute;
+            top: 80px;
+            right: 20px;
+            background: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 999;
+            font-weight: 600;
+        }
+        html[dir="rtl"] .memory-count { right: auto; left: 20px; }
+
     </style>
 </head>
 <body>
 
-    <!-- LANDING PAGE SECTION -->
+    <!-- Loading Spinner -->
+    <div class="loading-spinner" id="loading-spinner"></div>
+
+    <!-- LANDING PAGE -->
     <div id="landing">
-        <!-- Background Shapes -->
         <div class="shape shape-1"></div>
         <div class="shape shape-2"></div>
         <div class="shape shape-3"></div>
         
-        <!-- Landing Header -->
         <div class="landing-header">
             <div class="landing-logo" id="landing-logo">EMOTIONAL MEMORIES MAP</div>
             <button class="lang-btn-landing" onclick="toggleLanguage()" id="btn-lang-landing">فارسی</button>
@@ -284,7 +309,7 @@
         </div>
     </div>
 
-    <!-- APP SECTION (The Map) -->
+    <!-- APP SECTION -->
     <div id="app-container">
         <header>
             <div class="brand-container">
@@ -298,6 +323,10 @@
         </header>
 
         <div id="map"></div>
+
+        <div class="memory-count">
+            <span id="lbl-count">Memories:</span> <span id="memory-count-value">0</span>
+        </div>
 
         <div class="legend">
             <div class="legend-item"><div class="dot" style="background: #FFD700"></div><span id="lbl-joy">Joy</span></div>
@@ -340,21 +369,63 @@
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     
+    <!-- Firebase SDK -->
+    <script type="module">
+        // Import Firebase functions
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // ⚠️ REPLACE THIS WITH YOUR FIREBASE CONFIG ⚠️
+       // Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyCUzd5ImJu-9x1FPO0bA9Ne3Y3VIU55VLk",
+  authDomain: "emotional-memory-map.firebaseapp.com",
+  projectId: "emotional-memory-map",
+  storageBucket: "emotional-memory-map.firebasestorage.app",
+  messagingSenderId: "1070380538142",
+  appId: "1:1070380538142:web:94c24a2542c45fcd26d10f"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Make Firebase functions available globally
+        window.firebaseDB = db;
+        window.addDoc = addDoc;
+        window.getDocs = getDocs;
+        window.collection = collection;
+        window.query = query;
+        window.orderBy = orderBy;
+        window.serverTimestamp = serverTimestamp;
+    </script>
+    
     <script>
         // --- APP TRANSITION LOGIC ---
         function enterApp() {
             const landing = document.getElementById('landing');
             const app = document.getElementById('app-container');
+            const spinner = document.getElementById('loading-spinner');
             
-            // Fade out landing
+            spinner.style.display = 'block';
             landing.style.opacity = '0';
             landing.style.transform = 'scale(1.1)';
             
             setTimeout(() => {
                 landing.style.display = 'none';
                 app.style.display = 'flex';
-                // Trigger map resize to ensure tiles load correctly after display change
-                setTimeout(() => { map.invalidateSize(); }, 100);
+                setTimeout(() => { 
+                    map.invalidateSize(); 
+                    loadMemoriesFromFirebase(); // Load from Firebase instead of localStorage
+                }, 100);
             }, 1000);
         }
 
@@ -385,7 +456,8 @@
                 optJoy: "Joy",
                 optLove: "Love",
                 optLoss: "Loss",
-                optGrowth: "Growth"
+                optGrowth: "Growth",
+                lblCount: "Memories:"
             },
             fa: {
                 heroTitle: "هر مکان، ضربان قلبی از گذشته شما را در خود دارد.",
@@ -412,11 +484,14 @@
                 optJoy: "شادی",
                 optLove: "عشق",
                 optLoss: "غم",
-                optGrowth: "رشد"
+                optGrowth: "رشد",
+                lblCount: "خاطرات:"
             }
         };
 
         let currentLang = 'en';
+        let memories = [];
+        let tempLatLng = null;
 
         // --- MAP INITIALIZATION ---
         const map = L.map('map').setView([20, 0], 3);
@@ -427,14 +502,56 @@
             maxZoom: 19
         }).addTo(map);
 
-        // --- STATE ---
-        let memories = JSON.parse(localStorage.getItem('mnemosyne_memories')) || [
-            { id: 1, lat: 48.8566, lng: 2.3522, title: "First Date", emotion: "love", story: "We sat by the Seine for hours.", date: "2023-05-12" },
-            { id: 2, lat: 35.6762, lng: 139.6503, title: "New Beginnings", emotion: "growth", story: "Stepping off the plane changed my life.", date: "2022-11-03" },
-            { id: 3, lat: 32.4279, lng: 53.6880, title: "Home", emotion: "joy", story: "Coming back to Isfahan after years away.", date: "2023-01-20" }
-        ];
+        // --- FIREBASE FUNCTIONS ---
+        async function loadMemoriesFromFirebase() {
+            const spinner = document.getElementById('loading-spinner');
+            spinner.style.display = 'block';
 
-        let tempLatLng = null;
+            try {
+                const memoriesRef = collection(window.firebaseDB, "memories");
+                const q = query(memoriesRef, orderBy("createdAt", "desc"));
+                const querySnapshot = await window.getDocs(q);
+                
+                memories = [];
+                querySnapshot.forEach((doc) => {
+                    memories.push({
+                        id: doc.id,
+                        ...doc.data()
+                    });
+                });
+
+                renderMarkers();
+                updateMemoryCount();
+            } catch (error) {
+                console.error("Error loading memories:", error);
+                alert("Error loading memories. Check Firebase configuration.");
+            } finally {
+                spinner.style.display = 'none';
+            }
+        }
+
+        async function saveMemoryToFirebase(memory) {
+            const spinner = document.getElementById('loading-spinner');
+            spinner.style.display = 'block';
+
+            try {
+                const memoriesRef = collection(window.firebaseDB, "memories");
+                await window.addDoc(memoriesRef, {
+                    ...memory,
+                    createdAt: window.serverTimestamp()
+                });
+                
+                // Reload memories to get the new one with ID
+                await loadMemoriesFromFirebase();
+                return true;
+            } catch (error) {
+                console.error("Error saving memory:", error);
+                alert("Error saving memory. Check Firebase configuration.");
+                return false;
+            } finally {
+                spinner.style.display = 'none';
+            }
+        }
 
         // --- FUNCTIONS ---
         const getEmotionColor = (emotion) => {
@@ -451,10 +568,6 @@
             });
         };
 
-        const saveToLocalStorage = () => {
-            localStorage.setItem('mnemosyne_memories', JSON.stringify(memories));
-        };
-
         const renderMarkers = () => {
             map.eachLayer((layer) => {
                 if (layer instanceof L.Marker) map.removeLayer(layer);
@@ -464,16 +577,25 @@
                 const color = getEmotionColor(mem.emotion);
                 const marker = L.marker([mem.lat, mem.lng], { icon: createMarkerIcon(color) }).addTo(map);
                 const emotionLabel = translations[currentLang][mem.emotion] || mem.emotion;
+                
+                const dateDisplay = mem.createdAt ? 
+                    new Date(mem.createdAt.seconds * 1000).toLocaleDateString(currentLang === 'fa' ? 'fa-IR' : 'en-US') : 
+                    mem.date;
+
                 const popupContent = `
                     <div class="popup-header" style="background-color: ${color}">${emotionLabel}</div>
                     <div class="popup-body">
                         <div class="popup-title">${mem.title}</div>
                         <div class="popup-text">"${mem.story}"</div>
-                        <div class="popup-date">${mem.date}</div>
+                        <div class="popup-date">${dateDisplay}</div>
                     </div>
                 `;
                 marker.bindPopup(popupContent);
             });
+        };
+
+        const updateMemoryCount = () => {
+            document.getElementById('memory-count-value').textContent = memories.length;
         };
 
         // --- LANGUAGE TOGGLE ---
@@ -485,18 +607,17 @@
             html.setAttribute('lang', currentLang);
             html.setAttribute('dir', currentLang === 'fa' ? 'rtl' : 'ltr');
 
-            // Landing Page Text
             document.getElementById('hero-title').textContent = t.heroTitle;
             document.getElementById('hero-subtitle').textContent = t.heroSubtitle;
             document.getElementById('btn-cta').textContent = t.btnCta;
             document.getElementById('btn-lang-landing').textContent = t.btnLangLanding;
 
-            // App Text
             document.getElementById('lbl-title').textContent = t.title;
             document.getElementById('lbl-tagline').textContent = t.tagline;
             document.getElementById('btn-add').textContent = t.btnAdd;
             document.getElementById('btn-lang').textContent = t.btnLang;
             document.getElementById('lbl-modal-title').textContent = t.modalTitle;
+            document.getElementById('lbl-count').textContent = t.lblCount;
             
             document.getElementById('lbl-input-title').textContent = t.lblTitle;
             document.getElementById('title').placeholder = t.phTitle;
@@ -541,15 +662,19 @@
             tempLatLng = null;
         }
 
-        document.getElementById('memoryForm').addEventListener('submit', (e) => {
+        document.getElementById('memoryForm').addEventListener('submit', async (e) => {
             e.preventDefault();
+            
+            const submitBtn = document.getElementById('btn-submit');
+            submitBtn.disabled = true;
+            submitBtn.textContent = currentLang === 'fa' ? 'در حال ثبت...' : 'Saving...';
+
             const title = document.getElementById('title').value;
             const emotion = document.getElementById('emotion').value;
             const story = document.getElementById('story').value;
             const date = new Date().toLocaleDateString(currentLang === 'fa' ? 'fa-IR' : 'en-US');
 
             const newMemory = {
-                id: Date.now(),
                 lat: tempLatLng.lat,
                 lng: tempLatLng.lng,
                 title,
@@ -558,14 +683,18 @@
                 date
             };
 
-            memories.push(newMemory);
-            saveToLocalStorage();
-            renderMarkers();
-            closeModal();
-            map.flyTo([tempLatLng.lat, tempLatLng.lng], 10);
+            const success = await saveMemoryToFirebase(newMemory);
+            
+            if (success) {
+                closeModal();
+                map.flyTo([tempLatLng.lat, tempLatLng.lng], 10);
+            }
+            
+            submitBtn.disabled = false;
+            submitBtn.textContent = currentLang === 'fa' ? 'ثبت روی نقشه' : 'Pin Memory';
         });
 
-        // Initial Render
+        // Initial Render (will be called after Firebase loads)
         renderMarkers();
 
     </script>
